@@ -19,6 +19,7 @@ if (process.env.NODE_ENV==="development"){
 }
 connectDB()
 
+
 app.get('/',(req, res)=> {
     res.send('API is running...')
 })
@@ -32,7 +33,12 @@ app.use(notFound)
 
 app.use(errorHandler)
 
-
+// Step 1:
+app.use(express.static(path.resolve(__dirname, "./client/build")));
+// Step 2:
+app.get("*", function (request, response) {
+  response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
+});
 const PORT=process.env.PORT || 5000
 app.listen(PORT,console.log(`server running in ${process.env.NODE_ENV}  on port ${PORT}`.yellow.bold))
 
