@@ -7,6 +7,7 @@ import connectDB from './config/db.js'
 import voitureRoutes from "./routes/voitureRoutes.js"
 import {notFound,errorHandler } from './middelware/errorMiddelware.js'
 import userRoutes from './routes/userRoutes.js'
+import { dirname } from 'path';
 
 
 
@@ -20,9 +21,9 @@ if (process.env.NODE_ENV==="development"){
 connectDB()
 
 
-app.get('/',(req, res)=> {
-    res.send('API is running...')
-})
+//app.get('/',(req, res)=> {
+ //   res.send('API is running...')
+//})
 app.use(express.json())
 
 app.use('/api/voitures',voitureRoutes)
@@ -33,12 +34,24 @@ app.use(notFound)
 
 app.use(errorHandler)
 
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '/frontend/build')))
+  
+    app.get('*', (req, res) =>
+      res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
+    )
+  } else {
+    app.get('/', (req, res) => {
+      res.send('API is running....')
+    })
+  }
+  const __dirname = path.resolve();
 // Step 1:
-app.use(express.static(path.resolve(__dirname, "./client/build")));
+//app.use(express.static(path.resolve(__dirname, "./client/build")));
 // Step 2:
-app.get("*", function (request, response) {
-  response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
-});
+//app.get("*", function (request, response) {
+ // response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
+//});
 const PORT=process.env.PORT || 5000
 app.listen(PORT,console.log(`server running in ${process.env.NODE_ENV}  on port ${PORT}`.yellow.bold))
 
